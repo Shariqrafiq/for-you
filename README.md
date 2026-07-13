@@ -13,5 +13,5 @@ A private, personal website — a small gift, not a project for anyone else.
 Once GitHub Pages is turned on, this will be viewable at:
 `https://yourusername.github.io/for-you`
 
-Made with care, not with a template.
-
+---
+With love, **Shariq Rafiq Anim**
