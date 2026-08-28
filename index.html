@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Shariq &amp; Sadiya</title>
+<title>Our Story</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -18,6 +18,8 @@
     --gold-soft:#eecb96;
     --cream:#fff6f0;
     --ink:#fff6f0cc;
+    --sea:#2f7a8c;
+    --sea-light:#5fb3c7;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   html,body{height:100%;}
@@ -45,11 +47,22 @@
     90%{ opacity:.5; }
     100%{ transform:translateY(110vh) translateX(20px) rotate(200deg); opacity:0; }
   }
+  .heart-rise{
+    position:absolute; bottom:-8%; color:rgba(238,203,150,0.35); font-size:.9rem;
+    animation: rise linear infinite;
+  }
+  @keyframes rise{
+    0%{ transform:translateY(0) translateX(0) scale(.8); opacity:0; }
+    12%{ opacity:.55; }
+    88%{ opacity:.4; }
+    100%{ transform:translateY(-115vh) translateX(-16px) scale(1.1); opacity:0; }
+  }
 
   .progress{
     position:fixed; top:18px; left:50%; transform:translateX(-50%);
-    display:flex; gap:7px; z-index:40;
+    display:flex; gap:7px; z-index:40; transition:opacity .3s ease;
   }
+  .progress.hide{ opacity:0; pointer-events:none; }
   .progress .dot{
     width:6px; height:6px; border-radius:50%;
     background:rgba(238,203,150,0.25);
@@ -70,15 +83,15 @@
     padding:64px 20px 60px;
   }
   .screen.active{ display:flex; }
-  .fade-in{ animation: fadeIn .9s ease both; }
-  @keyframes fadeIn{ from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);} }
+  .fade-in{ animation: fadeIn .8s cubic-bezier(.2,.8,.3,1) both; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(16px) scale(.985);} to{opacity:1; transform:translateY(0) scale(1);} }
 
   .card{
     background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.02));
     border:1px solid rgba(238,203,150,0.28);
     border-radius:18px;
     padding:44px 36px;
-    max-width:380px;
+    max-width:400px;
     width:100%;
     text-align:center;
     backdrop-filter: blur(6px);
@@ -91,10 +104,10 @@
     color:var(--gold-soft);
     margin-bottom:14px;
   }
-  .card h1{ font-size:clamp(1.6rem,6vw,2.1rem); font-weight:600; margin-bottom:6px; }
-  .card p.sub{ font-size:.85rem; color:var(--ink); margin-bottom:28px; line-height:1.5; }
-  .field{ text-align:left; margin-bottom:16px; }
-  .field label{ display:block; font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; color:var(--gold-soft); margin-bottom:6px; }
+  .card h1{ font-size:clamp(1.5rem,6vw,2.05rem); font-weight:600; margin-bottom:6px; }
+  .card p.sub{ font-size:.85rem; color:var(--ink); margin-bottom:24px; line-height:1.5; }
+  .field{ text-align:left; margin-bottom:14px; }
+  .field label{ display:block; font-size:.7rem; letter-spacing:.08em; text-transform:uppercase; color:var(--gold-soft); margin-bottom:6px; }
   .field input{
     width:100%;
     padding:12px 14px;
@@ -105,28 +118,40 @@
     font-family:'Jost', sans-serif;
     font-size:.95rem;
     outline:none;
-    transition:border-color .2s;
+    transition:border-color .2s, box-shadow .2s;
     -webkit-appearance:none;
   }
-  .field input:focus{ border-color:var(--gold); }
+  .field input:focus{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(216,164,95,0.18); }
   .field input::placeholder{ color:rgba(255,246,240,0.35); }
 
   button, .btn{ font-family:'Jost', sans-serif; cursor:pointer; border:none; outline:none; }
   .btn-gold{
-    margin-top:8px; width:100%; padding:13px 20px; border-radius:10px;
+    margin-top:6px; width:100%; padding:13px 20px; border-radius:10px;
     background: linear-gradient(135deg, var(--gold-soft), var(--gold));
     color:#4a0e26; font-weight:500; font-size:.95rem; letter-spacing:.02em;
     transition: transform .18s ease, box-shadow .18s ease;
+    animation: softGlow 3.4s ease-in-out infinite;
   }
-  .btn-gold:hover{ transform:translateY(-2px); box-shadow:0 10px 26px rgba(216,164,95,0.35); }
+  @keyframes softGlow{ 0%,100%{ box-shadow:0 6px 18px rgba(216,164,95,0.18);} 50%{ box-shadow:0 10px 26px rgba(216,164,95,0.4);} }
+  .btn-gold:hover{ transform:translateY(-2px) scale(1.01); }
+  .btn-gold:active{ transform:translateY(0) scale(.98); }
   .btn-gold:focus-visible{ box-shadow:0 0 0 3px var(--blush); }
+  .btn-gold:disabled{ opacity:.5; cursor:not-allowed; animation:none; }
   .hint{ margin-top:14px; font-size:.72rem; color:rgba(255,246,240,0.45); }
   .error{ color:#ffb4c6; font-size:.78rem; margin-top:10px; min-height:1em; }
+  .ok-msg{ color:#a8e0b8; font-size:.78rem; margin-top:10px; min-height:1em; }
+
+  .tab-row{ display:flex; gap:6px; background:rgba(0,0,0,0.22); border-radius:12px; padding:4px; margin-bottom:26px; }
+  .tab-btn{
+    flex:1; padding:10px 6px; border-radius:9px; background:transparent; color:rgba(255,246,240,0.55);
+    font-size:.8rem; letter-spacing:.03em; transition:all .25s ease;
+  }
+  .tab-btn.active{ background:linear-gradient(135deg, var(--gold-soft), var(--gold)); color:#4a0e26; font-weight:500; }
+  .auth-panel{ display:none; }
+  .auth-panel.active{ display:block; animation:fadeIn .4s ease both; }
 
   /* ---------- envelope login seal ---------- */
-  .envelope{
-    width:120px; height:84px; margin:0 auto 20px; position:relative;
-  }
+  .envelope{ width:120px; height:84px; margin:0 auto 20px; position:relative; }
   .envelope .body{
     position:absolute; inset:0; background:linear-gradient(160deg, var(--blush), var(--pink-soft));
     border-radius:6px; box-shadow:0 14px 26px rgba(0,0,0,0.35);
@@ -139,16 +164,11 @@
     animation: flapOpen 2.6s ease-in-out infinite;
   }
   @keyframes flapOpen{ 0%,100%{ transform:rotateX(0deg);} 50%{ transform:rotateX(35deg);} }
-  .envelope .heart{
-    position:absolute; top:30px; left:50%; transform:translateX(-50%);
-    color:var(--rose-deep); font-size:1.1rem;
-  }
+  .envelope .heart{ position:absolute; top:30px; left:50%; transform:translateX(-50%); color:var(--rose-deep); font-size:1.1rem; animation:heartbeat 1.6s ease-in-out infinite; }
+  @keyframes heartbeat{ 0%,100%{transform:translateX(-50%) scale(1);} 25%{transform:translateX(-50%) scale(1.18);} 40%{transform:translateX(-50%) scale(1);} }
 
   .page-inner{ max-width:640px; width:100%; text-align:center; }
-  .step-label{
-    font-size:.68rem; letter-spacing:.28em; text-transform:uppercase; color:var(--gold-soft);
-    margin-bottom:10px;
-  }
+  .step-label{ font-size:.68rem; letter-spacing:.28em; text-transform:uppercase; color:var(--gold-soft); margin-bottom:10px; }
   .page-inner h2{ font-size:clamp(1.7rem,6vw,2.4rem); font-weight:600; margin-bottom:14px; }
   .page-inner .lede{ font-size:1rem; color:var(--ink); line-height:1.6; margin-bottom:36px; max-width:480px; margin-left:auto; margin-right:auto; }
   .next-row{ display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-top:38px; }
@@ -156,17 +176,18 @@
     padding:13px 34px; border-radius:999px; background:transparent; border:1px solid var(--gold);
     color:var(--gold-soft); font-size:.9rem; letter-spacing:.06em; transition: all .2s ease;
   }
-  .next-btn:hover{ background:var(--gold); color:var(--rose-deep); }
-  .next-btn:disabled{ opacity:.35; cursor:not-allowed; background:transparent; color:var(--gold-soft); }
+  .next-btn:hover{ background:var(--gold); color:var(--rose-deep); transform:translateY(-2px); }
+  .next-btn:disabled{ opacity:.35; cursor:not-allowed; background:transparent; color:var(--gold-soft); transform:none; }
   .ghost-btn{ border-color:rgba(238,203,150,0.35); color:rgba(255,246,240,0.55); }
-  .ghost-btn:hover{ border-color:var(--gold-soft); color:var(--gold-soft); background:rgba(238,203,150,0.08); }
+  .ghost-btn:hover{ border-color:var(--gold-soft); color:var(--gold-soft); background:rgba(238,203,150,0.08); transform:translateY(-2px); }
 
   .sync-pill{
     display:inline-flex; align-items:center; gap:6px; font-size:.65rem; letter-spacing:.06em;
     color:rgba(255,246,240,0.5); background:rgba(0,0,0,0.18); border:1px solid rgba(238,203,150,0.25);
     padding:5px 12px; border-radius:999px; margin-bottom:22px;
   }
-  .sync-pill .dotpulse{ width:6px; height:6px; border-radius:50%; background:#7be0a0; }
+  .sync-pill .dotpulse{ width:6px; height:6px; border-radius:50%; background:#7be0a0; animation:dotpulse 1.6s ease-in-out infinite; }
+  @keyframes dotpulse{ 0%,100%{opacity:1; transform:scale(1);} 50%{opacity:.4; transform:scale(1.4);} }
   .sync-pill.offline .dotpulse{ background:#e0937b; }
 
   /* ---------- anniversary ---------- */
@@ -181,7 +202,8 @@
   @keyframes pulse{ 0%,100%{ filter:drop-shadow(0 0 0px var(--gold)); } 50%{ filter:drop-shadow(0 0 10px var(--gold-soft)); } }
   .date-tag{ font-size:.78rem; letter-spacing:.18em; text-transform:uppercase; color:rgba(255,246,240,0.55); margin-bottom:6px; }
   .counter-row{ display:flex; gap:22px; justify-content:center; margin:22px 0 8px; flex-wrap:wrap; }
-  .counter-box{ min-width:76px; }
+  .counter-box{ min-width:76px; transition:transform .2s ease; }
+  .counter-box:hover{ transform:translateY(-3px); }
   .counter-num{ font-family:'Cormorant Garamond', serif; font-size:clamp(1.7rem,7vw,2.6rem); font-weight:600; color:var(--gold-soft); line-height:1; }
   .counter-lbl{ font-size:.62rem; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,246,240,0.5); margin-top:4px; }
   .anniv-note{ font-family:'Cormorant Garamond', serif; font-style:italic; font-size:1.15rem; color:var(--blush); max-width:440px; margin:18px auto 0; line-height:1.6; }
@@ -204,8 +226,9 @@
     width:190px; border-radius:16px; overflow:hidden; border:1px solid rgba(238,203,150,0.3);
     background:rgba(255,255,255,0.03); opacity:0; transform:translateY(18px) scale(.96);
     animation: momentIn .6s ease forwards;
-    box-shadow:0 18px 34px rgba(0,0,0,0.32);
+    box-shadow:0 18px 34px rgba(0,0,0,0.32); transition:transform .25s ease;
   }
+  .moment-card:hover{ transform:translateY(-4px); }
   @keyframes momentIn{ to{ opacity:1; transform:translateY(0) scale(1); } }
   .moment-card video, .moment-card img{ width:100%; height:220px; object-fit:cover; display:block; }
   .moment-card .cap{ padding:8px 10px; font-size:.68rem; color:rgba(255,246,240,0.55); text-align:center; }
@@ -234,7 +257,7 @@
     background:rgba(74,14,38,0.75); border:1px solid var(--gold); color:var(--gold-soft); font-size:1.05rem; cursor:pointer;
     display:flex; align-items:center; justify-content:center; transition:transform .2s ease, background .2s ease;
   }
-  .photo-tile .open-heart:hover{ transform:scale(1.1); background:var(--gold); color:var(--rose-deep); }
+  .photo-tile .open-heart:hover{ transform:scale(1.15); background:var(--gold); color:var(--rose-deep); }
   .photo-tile .open-heart.opened{ background:var(--gold); color:var(--rose-deep); }
   .photo-tile .veil{ position:absolute; inset:0; background:linear-gradient(160deg, rgba(178,58,92,0.35), rgba(74,14,38,0.55)); pointer-events:none; }
   .letters-collected{ font-size:.78rem; color:rgba(255,246,240,0.55); margin-top:24px; }
@@ -348,7 +371,7 @@
   .sealed-preview p{ font-family:'Cormorant Garamond', serif; font-style:italic; font-size:1.1rem; line-height:1.6; color:var(--blush); }
 
   /* ---------- games hub ---------- */
-  .game-grid{ display:flex; gap:20px; justify-content:center; flex-wrap:wrap; max-width:520px; margin:0 auto; }
+  .game-grid{ display:flex; gap:20px; justify-content:center; flex-wrap:wrap; max-width:640px; margin:0 auto; }
   .game-card{
     width:220px; padding:28px 20px; border-radius:16px; cursor:pointer;
     background:linear-gradient(160deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
@@ -356,7 +379,8 @@
     transition:transform .22s ease, box-shadow .22s ease, border-color .22s ease;
   }
   .game-card:hover{ transform:translateY(-5px); box-shadow:0 18px 32px rgba(0,0,0,0.35); border-color:var(--gold); }
-  .game-card .gicon{ font-size:2rem; margin-bottom:12px; }
+  .game-card .gicon{ font-size:2rem; margin-bottom:12px; display:inline-block; animation:bob 2.6s ease-in-out infinite; }
+  @keyframes bob{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(-6px);} }
   .game-card h3{ font-size:1.3rem; color:var(--gold-soft); margin-bottom:6px; }
   .game-card p{ font-size:.78rem; color:rgba(255,246,240,0.55); line-height:1.5; }
 
@@ -424,13 +448,74 @@
   .idea-add button{ padding:0 18px; border-radius:10px; background:transparent; border:1px solid var(--gold); color:var(--gold-soft); font-size:.8rem; transition:all .2s ease; }
   .idea-add button:hover{ background:var(--gold); color:var(--rose-deep); }
 
+  /* ---------- hotel of riddles ---------- */
+  .corridor{ display:flex; flex-direction:column; gap:16px; max-width:480px; margin:0 auto; }
+  .door-card{
+    border-radius:14px; border:1px solid rgba(238,203,150,0.3); background:linear-gradient(160deg, rgba(255,255,255,0.07), rgba(255,255,255,0.02));
+    padding:20px 22px; text-align:left; transition:border-color .25s ease, transform .2s ease;
+  }
+  .door-card.solved{ border-color:var(--gold); background:linear-gradient(160deg, rgba(238,203,150,0.14), rgba(238,203,150,0.03)); }
+  .door-card .door-top{ display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+  .door-num{ width:30px; height:30px; border-radius:8px; background:rgba(0,0,0,0.25); border:1px solid rgba(238,203,150,0.35); display:flex; align-items:center; justify-content:center; font-family:'Cormorant Garamond', serif; color:var(--gold-soft); font-size:.95rem; flex-shrink:0; transition:background .25s ease, transform .25s ease;}
+  .door-card.solved .door-num{ background:var(--gold); color:var(--rose-deep); transform:rotate(-8deg); }
+  .door-riddle{ font-family:'Cormorant Garamond', serif; font-style:italic; font-size:1.08rem; line-height:1.5; color:var(--cream); }
+  .door-answer-row{ display:flex; gap:8px; margin-top:12px; }
+  .door-answer-row input{
+    flex:1; padding:9px 12px; border-radius:8px; border:1px solid rgba(238,203,150,0.32);
+    background:rgba(0,0,0,0.2); color:var(--cream); font-family:'Jost', sans-serif; font-size:.85rem; outline:none;
+  }
+  .door-answer-row input:focus{ border-color:var(--gold); }
+  .door-answer-row button{ padding:0 16px; border-radius:8px; background:transparent; border:1px solid var(--gold); color:var(--gold-soft); font-size:.78rem; transition:all .2s ease; }
+  .door-answer-row button:hover{ background:var(--gold); color:var(--rose-deep); }
+  .door-reveal{ display:none; margin-top:10px; font-size:.85rem; color:var(--blush); font-family:'Cormorant Garamond', serif; font-style:italic; font-size:1.02rem; }
+  .door-card.solved .door-reveal{ display:block; animation:fadeIn .5s ease both; }
+  .door-card.solved .door-answer-row{ display:none; }
+  .door-hint{ font-size:.68rem; color:rgba(255,246,240,0.4); margin-top:6px; min-height:1em; }
+
+  /* ---------- beach bottle ---------- */
+  .beach-scene{ position:relative; width:100%; max-width:420px; height:230px; margin:0 auto 16px; border-radius:20px; overflow:hidden;
+    background:linear-gradient(180deg, #d9b98a 0%, #e8749b00 0%, var(--sea-light) 42%, var(--sea) 100%); border:1px solid rgba(238,203,150,0.3); }
+  .beach-scene .sand{ position:absolute; left:0; right:0; bottom:0; height:34%; background:linear-gradient(180deg,#e4c088,#c99f63); }
+  .wave{ position:absolute; left:-10%; width:120%; height:60px; background:rgba(255,255,255,0.18); border-radius:50%; }
+  .wave1{ top:40%; animation:waveMove 6s ease-in-out infinite; }
+  .wave2{ top:48%; background:rgba(255,255,255,0.12); animation:waveMove 8s ease-in-out infinite reverse; }
+  @keyframes waveMove{ 0%,100%{ transform:translateX(0) scaleX(1);} 50%{ transform:translateX(4%) scaleX(1.05);} }
+  .bottle{
+    position:absolute; left:50%; top:52%; transform:translate(-50%,-50%); font-size:2.6rem; cursor:pointer;
+    animation:bobBottle 3.2s ease-in-out infinite; filter:drop-shadow(0 8px 10px rgba(0,0,0,0.3)); user-select:none; z-index:3;
+  }
+  @keyframes bobBottle{ 0%,100%{ transform:translate(-50%,-50%) rotate(-6deg);} 50%{ transform:translate(-50%,-58%) rotate(6deg);} }
+  .bottle:hover{ animation-play-state:paused; transform:translate(-50%,-56%) scale(1.08) rotate(0deg); }
+  .beach-hint{ position:absolute; bottom:10px; left:0; right:0; text-align:center; font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,246,240,0.6); z-index:3; }
+
+  /* ---------- setup/share extras ---------- */
+  .share-box{
+    max-width:440px; margin:0 auto; border-radius:14px; border:1px dashed rgba(238,203,150,0.4);
+    background:rgba(238,203,150,0.06); padding:20px 22px; text-align:left;
+  }
+  .share-box label{ font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:var(--gold-soft); display:block; margin-bottom:6px; }
+  .share-row{ display:flex; gap:8px; margin-bottom:16px; }
+  .share-row input{
+    flex:1; padding:11px 12px; border-radius:8px; border:1px solid rgba(238,203,150,0.32);
+    background:rgba(0,0,0,0.25); color:var(--cream); font-family:'Jost', sans-serif; font-size:.8rem; outline:none;
+  }
+  .share-row button{ padding:0 16px; border-radius:8px; background:linear-gradient(135deg, var(--gold-soft), var(--gold)); color:#4a0e26; font-size:.78rem; font-weight:500; }
+  .share-note{ font-size:.75rem; color:rgba(255,246,240,0.55); line-height:1.55; }
+
+  /* confetti / sparkle */
+  .confetti-piece{ position:fixed; top:-10px; width:8px; height:14px; z-index:80; pointer-events:none; border-radius:2px; }
+  @keyframes confettiFall{ to{ transform:translateY(108vh) rotate(540deg); opacity:0; } }
+
   @media (prefers-reduced-motion: reduce){
-    .petal{ animation:none; display:none; }
+    .petal, .heart-rise{ animation:none; display:none; }
     .fade-in{ animation:none; }
     .heart-draw path{ animation:none; stroke-dashoffset:0; }
     .flip-inner{ transition:none; }
     .wheel{ transition:none; }
     .envelope .flap{ animation:none; }
+    .btn-gold{ animation:none; }
+    .bottle{ animation:none; }
+    .wave{ animation:none; }
   }
   @media (max-width:600px){
     .screen{ padding:56px 14px 50px; }
@@ -444,6 +529,7 @@
     .memory-grid{ grid-template-columns:repeat(4,1fr); gap:8px; max-width:320px; }
     .game-card{ width:100%; max-width:280px; }
     .wheel-wrap{ width:230px; height:230px; }
+    .beach-scene{ height:190px; }
   }
   @media (max-width:360px){
     .trio{ gap:12px; }
@@ -456,7 +542,7 @@
 <div class="petals" id="petals"></div>
 <div class="progress" id="progressDots"></div>
 
-<!-- SCREEN 0: LOGIN -->
+<!-- SCREEN 0: SETUP / LOGIN -->
 <div class="screen active" id="screen-login">
   <div class="card fade-in">
     <div class="envelope">
@@ -464,21 +550,60 @@
       <div class="flap"></div>
       <div class="heart">&#10084;</div>
     </div>
-    <div class="eyebrow">Private &middot; Shariq &amp; Sadiya</div>
-    <h1>A little something, sealed for us</h1>
-    <p class="sub">Sign in to open it.</p>
-    <form id="loginForm">
-      <div class="field">
-        <label for="userInput">Username</label>
-        <input id="userInput" type="text" placeholder="Username" required autocomplete="off">
-      </div>
-      <div class="field">
-        <label for="passInput">Password</label>
-        <input id="passInput" type="password" placeholder="Password" required autocomplete="off">
-      </div>
-      <button type="submit" class="btn-gold">Open</button>
-      <div class="error" id="loginError"></div>
-    </form>
+    <div class="eyebrow">Private &middot; Just for the two of you</div>
+    <h1>Our Story</h1>
+    <p class="sub">A little something, sealed for the two of you. Create your space, or sign back in to open it.</p>
+    <div class="sync-pill" id="fbStatusPill" style="margin-bottom:20px;"><span class="dotpulse"></span><span id="fbStatusText">Checking Firebase connection…</span></div>
+
+    <div class="tab-row">
+      <button class="tab-btn active" id="tabSetupBtn" onclick="switchAuthTab('setup')">Create</button>
+      <button class="tab-btn" id="tabLoginBtn" onclick="switchAuthTab('login')">Log in</button>
+    </div>
+
+    <!-- CREATE ACCOUNT -->
+    <div class="auth-panel active" id="panel-setup">
+      <form id="setupForm">
+        <div class="field">
+          <label for="setupYourName">Your name</label>
+          <input id="setupYourName" type="text" placeholder="e.g. Shariq" required autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="setupPartnerName">Their name</label>
+          <input id="setupPartnerName" type="text" placeholder="e.g. Sadiya" required autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="setupStartDate">Day it all started</label>
+          <input id="setupStartDate" type="date" required>
+        </div>
+        <div class="field">
+          <label for="setupUser">Choose a username</label>
+          <input id="setupUser" type="text" placeholder="Something only you two would pick" required autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="setupPass">Choose a password</label>
+          <input id="setupPass" type="password" placeholder="At least 6 characters" required autocomplete="off">
+        </div>
+        <button type="submit" class="btn-gold">Create our page</button>
+        <div class="error" id="setupError"></div>
+      </form>
+    </div>
+
+    <!-- LOG IN -->
+    <div class="auth-panel" id="panel-login">
+      <form id="loginForm">
+        <div class="field">
+          <label for="userInput">Username</label>
+          <input id="userInput" type="text" placeholder="Username" required autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="passInput">Password</label>
+          <input id="passInput" type="password" placeholder="Password" required autocomplete="off">
+        </div>
+        <button type="submit" class="btn-gold">Open</button>
+        <div class="error" id="loginError"></div>
+      </form>
+      <div class="hint" id="shareHint" style="display:none;"></div>
+    </div>
   </div>
 </div>
 
@@ -486,11 +611,11 @@
 <div class="screen" id="screen-anniversary">
   <div class="page-inner fade-in anniv-wrap">
     <div class="step-label">01 &middot; The Beginning</div>
-    <h2>Where it all started</h2>
+    <h2 id="anniHeading">Where it all started</h2>
     <svg class="heart-draw" viewBox="0 0 200 180">
       <path d="M100,170 C40,120 5,80 5,45 C5,15 30,-2 55,10 C75,20 90,40 100,55 C110,40 125,20 145,10 C170,-2 195,15 195,45 C195,80 160,120 100,170 Z"/>
     </svg>
-    <div class="date-tag" id="anniDateTag">13 March 2022</div>
+    <div class="date-tag" id="anniDateTag">—</div>
     <div class="counter-row" id="counterRow">
       <div class="counter-box"><div class="counter-num" id="cYears">0</div><div class="counter-lbl">Years</div></div>
       <div class="counter-box"><div class="counter-num" id="cDays">0</div><div class="counter-lbl">Days</div></div>
@@ -585,8 +710,8 @@
 <div class="screen" id="screen-games">
   <div class="page-inner fade-in">
     <div class="step-label">06 &middot; Play a Little</div>
-    <h2>Two games for us</h2>
-    <p class="lede">No winning or losing here — just an excuse to sit close together for five minutes.</p>
+    <h2>A few games for us</h2>
+    <p class="lede">No winning or losing here — just an excuse to sit close together for a few minutes.</p>
     <div class="game-grid">
       <div class="game-card" onclick="goToGame('screen-memory')">
         <div class="gicon">&#129505;</div>
@@ -597,6 +722,16 @@
         <div class="gicon">&#127183;</div>
         <h3>Date Night Wheel</h3>
         <p>Spin for a random idea of what to do together tonight — or add your own.</p>
+      </div>
+      <div class="game-card" onclick="goToGame('screen-riddles')">
+        <div class="gicon">&#128273;</div>
+        <h3>Hotel of Riddles</h3>
+        <p>Four locked doors down the hallway. Solve each riddle to open it.</p>
+      </div>
+      <div class="game-card" onclick="goToGame('screen-beach')">
+        <div class="gicon">&#127942;</div>
+        <h3>Message in a Bottle</h3>
+        <p>Wash a bottle ashore and see what little question washes up with it.</p>
       </div>
     </div>
     <div class="next-row">
@@ -642,6 +777,46 @@
       <div class="add-row">
         <input id="ideaInput" type="text" placeholder="e.g. Build a blanket fort">
         <button onclick="addIdea()">Add</button>
+      </div>
+    </div>
+    <div class="next-row">
+      <button class="ghost-btn" onclick="goTo('screen-games')">Back to games</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 5.8: HOTEL OF RIDDLES -->
+<div class="screen" id="screen-riddles">
+  <div class="page-inner fade-in">
+    <div class="step-label">Hotel of Riddles</div>
+    <h2>Four doors down the hall</h2>
+    <p class="lede">Answer each riddle to unlock the door and see what's inside.</p>
+    <div class="corridor" id="corridor"></div>
+    <div class="next-row">
+      <button class="ghost-btn" onclick="goTo('screen-games')">Back to games</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 5.9: MESSAGE IN A BOTTLE (BEACH) -->
+<div class="screen" id="screen-beach">
+  <div class="page-inner fade-in">
+    <div class="step-label">Message in a Bottle</div>
+    <h2>Something washed ashore</h2>
+    <p class="lede">Tap the bottle to see what question floated in today.</p>
+    <div class="beach-scene">
+      <div class="wave wave2"></div>
+      <div class="wave wave1"></div>
+      <div class="sand"></div>
+      <div class="bottle" id="bottleEl" onclick="popBottle()">&#127866;</div>
+      <div class="beach-hint">tap the bottle</div>
+    </div>
+    <div class="reel-box" id="beachReelBox"><p id="beachReelText">—</p></div>
+    <div class="idea-add">
+      <label for="beachIdeaInput">Add your own question to wash ashore</label>
+      <div class="add-row">
+        <input id="beachIdeaInput" type="text" placeholder="e.g. What's your favorite memory of us?">
+        <button onclick="addBeachIdea()">Add</button>
       </div>
     </div>
     <div class="next-row">
@@ -712,10 +887,35 @@
       Every ordinary day still looks better with you somewhere in it.
       This whole little page was just an excuse to say that properly.
     </p>
-    <p class="signature">— with love, Shariq Rafiq Anim</p>
+    <p class="signature" id="signatureText">— with love</p>
     <div class="next-row">
       <button class="ghost-btn" onclick="goTo('screen-promise')">Back</button>
+      <button class="next-btn" onclick="goTo('screen-share')">Share this page</button>
       <button class="ghost-btn" onclick="goTo('screen-anniversary')">Start over</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 9: SHARE -->
+<div class="screen" id="screen-share">
+  <div class="page-inner fade-in">
+    <div class="step-label">Just Between Us</div>
+    <h2>Share this page</h2>
+    <p class="lede">Anyone with this link still needs your username and password to open it — so it stays private to the two of you.</p>
+    <div class="share-box">
+      <label for="shareLinkInput">Shareable link</label>
+      <div class="share-row">
+        <input id="shareLinkInput" type="text" readonly>
+        <button onclick="copyShareLink()">Copy</button>
+      </div>
+      <label for="shareUserDisplay">Username</label>
+      <div class="share-row">
+        <input id="shareUserDisplay" type="text" readonly>
+      </div>
+      <p class="share-note">Keep your password just between the two of you — whoever you send this to will need it to sign in. All photos, letters, and games are stored under your account and stay private to your login.</p>
+    </div>
+    <div class="next-row">
+      <button class="ghost-btn" onclick="goTo('screen-final')">Back</button>
     </div>
   </div>
 </div>
@@ -740,61 +940,72 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 <script>
   /* =========================================================================
-     FIREBASE SETUP — REQUIRED for uploads to sync across devices/logins.
+     SETUP — REQUIRED for accounts, uploads, and cross-device sync.
+
+     DATABASE (Firestore — free forever, no card needed):
      1. Go to https://console.firebase.google.com and create a free project.
      2. Add a Web App to it, copy the config object it gives you, and paste
-        it below in place of the placeholder values.
-     3. In the console, enable "Firestore Database" (start in test mode)
-        and "Storage" (start in test mode). Test mode is open read/write —
-        fine for a private gift link only the two of you know, but you can
-        tighten the rules later in the Firebase console if you want.
-     4. Re-upload this file to Netlify. That's it — no server needed.
-     If you skip this, the site still works, but uploads are only visible
-     on the device that added them (shown by the sync pill on the video page).
-     ========================================================================= */
-  <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+        it below in place of firebaseConfig.
+     3. In the console enable "Firestore Database" (start in test mode).
+        Every couple's data lives in its own Firestore document under the
+        "couples" collection, keyed by the username they choose at setup.
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+     PHOTO/VIDEO STORAGE (Cloudinary — free tier, no card needed):
+     Firebase Storage now requires a paid Blaze billing plan even to stay
+     within its free quota, so photo/video uploads here go to Cloudinary
+     instead, which has no card requirement on its free tier (25GB storage
+     + 25GB bandwidth/month).
+     1. Create a free account at https://cloudinary.com
+     2. On your Cloudinary dashboard, copy your "Cloud name".
+     3. Go to Settings -> Upload -> Upload presets -> Add upload preset.
+        Set "Signing Mode" to "Unsigned", give it any name, and Save.
+        (Unsigned presets are what let this page upload directly from the
+        browser without a backend server or secret key.)
+     4. Paste your cloud name and preset name into CLOUDINARY_CONFIG below.
+
+     Deploy this file (e.g. push to a GitHub repo and connect it to Netlify
+     or GitHub Pages). No backend/server code is needed beyond Firebase +
+     Cloudinary.
+
+     If firebaseConfig is left as placeholder values, the page still works
+     for a single visit, but accounts and the shared link will not persist.
+     If CLOUDINARY_CONFIG is left as placeholder values, uploaded photos/
+     videos will only be visible on this device, this session.
+     ========================================================================= */
   const firebaseConfig = {
-    apiKey: "AIzaSyCxXGnwJzq0lW3kSyTnPGJJyA8En9zds7U",
-    authDomain: "for-you-b209f.firebaseapp.com",
-    projectId: "for-you-b209f",
-    storageBucket: "for-you-b209f.firebasestorage.app",
-    messagingSenderId: "532104004422",
-    appId: "1:532104004422:web:e5800c37a4d7714c2c9b47",
-    measurementId: "G-7Z2NBFJFLH"
+    apiKey: "AIzaSyDrcgb7dAioL2Gt8_M96MHV28-YTXXZNnc",
+    authDomain: "our-story0614.firebaseapp.com",
+    projectId: "our-story0614",
+    storageBucket: "our-story0614.firebasestorage.app",
+    messagingSenderId: "543405275351",
+    appId: "1:543405275351:web:c2a0b5fdb0690a5fa65892",
+    measurementId: "G-32LD44PERN"
   };
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
+  const CLOUDINARY_CONFIG = {
+    cloudName: "av6wi00t",
+    uploadPreset: "ml_default"
+  };
 
-  let fbEnabled = false, db = null, storageRef = null;
-  const SHARED_DOC = () => db.collection('ourStory').doc('shared');
+  let fbEnabled = false, db = null;
   try{
     if(firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY"){
       firebase.initializeApp(firebaseConfig);
       db = firebase.firestore();
-      storageRef = firebase.storage().ref();
       fbEnabled = true;
     }
   }catch(e){ console.warn('Firebase not configured yet:', e); fbEnabled = false; }
+
+  const cloudinaryEnabled = CLOUDINARY_CONFIG.cloudName && CLOUDINARY_CONFIG.cloudName !== "YOUR_CLOUD_NAME"
+    && CLOUDINARY_CONFIG.uploadPreset && CLOUDINARY_CONFIG.uploadPreset !== "YOUR_UNSIGNED_PRESET";
 
   function setSyncPill(){
     const pill = document.getElementById('syncPill');
     const text = document.getElementById('syncPillText');
     if(!pill) return;
-    if(fbEnabled){
+    if(fbEnabled && cloudinaryEnabled){
       pill.classList.remove('offline');
       text.textContent = 'Synced — visible to both of you, everywhere';
     } else {
@@ -803,53 +1014,205 @@
     }
   }
 
-  // shared, live state populated from Firestore (or local fallback)
-  let sharedState = { moments: [], letterPhotos: {}, gallery: [], extraQuotes: [] };
+  // ============ account / auth state ============
+  let currentUsername = null;
+  let coupleData = { yourName:'', partnerName:'', startDate:null };
+  let sharedState = { moments: [], letterPhotos: {}, gallery: [], extraQuotes: [], dateIdeas: [], beachIdeas: [], riddlesSolved: {} };
 
+  const COUPLES = () => db.collection('couples');
+  const COUPLE_DOC = () => COUPLES().doc(currentUsername);
+
+  async function hashText(text){
+    const enc = new TextEncoder().encode(text);
+    const buf = await crypto.subtle.digest('SHA-256', enc);
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+  }
+  function normUser(u){ return u.trim().toLowerCase().replace(/[^a-z0-9_\-]/g, ''); }
+
+  function switchAuthTab(which){
+    document.getElementById('tabSetupBtn').classList.toggle('active', which==='setup');
+    document.getElementById('tabLoginBtn').classList.toggle('active', which==='login');
+    document.getElementById('panel-setup').classList.toggle('active', which==='setup');
+    document.getElementById('panel-login').classList.toggle('active', which==='login');
+  }
+
+  // pre-fill from a shared link: ?couple=username
+  const urlParams = new URLSearchParams(location.search);
+  const sharedUsername = urlParams.get('couple');
+  if(sharedUsername){
+    switchAuthTab('login');
+    document.getElementById('userInput').value = sharedUsername;
+    const hintEl = document.getElementById('shareHint');
+    hintEl.style.display = 'block';
+    hintEl.textContent = "You've been sent this page — enter the password to open it.";
+  }
+
+  document.getElementById('setupForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    const errEl = document.getElementById('setupError');
+    errEl.textContent = '';
+    const yourName = document.getElementById('setupYourName').value.trim();
+    const partnerName = document.getElementById('setupPartnerName').value.trim();
+    const startDate = document.getElementById('setupStartDate').value;
+    const username = normUser(document.getElementById('setupUser').value);
+    const password = document.getElementById('setupPass').value;
+
+    if(!yourName || !partnerName || !startDate || !username || password.length < 6){
+      errEl.textContent = 'Please fill everything in — password needs at least 6 characters.';
+      return;
+    }
+    if(!fbEnabled){
+      errEl.textContent = "Storage isn't connected yet, so accounts can't be saved. Ask whoever set this page up to add the Firebase config.";
+      return;
+    }
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    submitBtn.disabled = true; submitBtn.textContent = 'Creating…';
+    try{
+      const existing = await COUPLES().doc(username).get();
+      if(existing.exists){
+        errEl.textContent = 'That username is already taken — try another, or log in instead.';
+        submitBtn.disabled = false; submitBtn.textContent = 'Create our page';
+        return;
+      }
+      const passwordHash = await hashText(password);
+      await COUPLES().doc(username).set({
+        yourName, partnerName, startDate, passwordHash,
+        createdAt: Date.now(),
+        moments: [], letterPhotos: {}, gallery: [], extraQuotes: [], dateIdeas: [], beachIdeas: [], riddlesSolved: {}
+      });
+      currentUsername = username;
+      coupleData = { yourName, partnerName, startDate };
+      sessionStorage.setItem('unlocked_user', username);
+      onLoginSuccess();
+    }catch(err){
+      console.warn(err);
+      errEl.textContent = 'Something went wrong creating your page — try again in a moment.';
+    }
+    submitBtn.disabled = false; submitBtn.textContent = 'Create our page';
+  });
+
+  document.getElementById('loginForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    const errEl = document.getElementById('loginError');
+    errEl.textContent = '';
+    const username = normUser(document.getElementById('userInput').value);
+    const password = document.getElementById('passInput').value;
+    if(!username || !password){ errEl.textContent = 'Enter both fields.'; return; }
+    if(!fbEnabled){ errEl.textContent = "Storage isn't connected yet — accounts can't be checked."; return; }
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    submitBtn.disabled = true; submitBtn.textContent = 'Opening…';
+    try{
+      const doc = await COUPLES().doc(username).get();
+      if(!doc.exists){ errEl.textContent = "That doesn't match — try again."; submitBtn.disabled=false; submitBtn.textContent='Open'; return; }
+      const data = doc.data();
+      const passwordHash = await hashText(password);
+      if(passwordHash !== data.passwordHash){ errEl.textContent = "That doesn't match — try again."; submitBtn.disabled=false; submitBtn.textContent='Open'; return; }
+      currentUsername = username;
+      coupleData = { yourName: data.yourName, partnerName: data.partnerName, startDate: data.startDate };
+      sessionStorage.setItem('unlocked_user', username);
+      onLoginSuccess();
+    }catch(err){
+      console.warn(err);
+      errEl.textContent = 'Something went wrong signing in — try again in a moment.';
+      submitBtn.disabled = false; submitBtn.textContent = 'Open';
+    }
+  });
+
+  function onLoginSuccess(){
+    document.getElementById('finalHeading').textContent = `One more thing, ${coupleData.partnerName}`;
+    document.getElementById('anniHeading').textContent = 'Where it all started';
+    document.getElementById('signatureText').textContent = `— with love, ${coupleData.yourName}`;
+    document.getElementById('progressDots').classList.remove('hide');
+    setSyncPill();
+    confettiBurst();
+    listenToSharedState();
+    buildShareScreen();
+    goTo('screen-anniversary');
+  }
+
+  // ============ shared per-couple state ============
   function saveSharedField(updater){
-    if(!fbEnabled) return;
+    if(!fbEnabled || !currentUsername) return;
     const patch = updater(sharedState);
-    SHARED_DOC().set(patch, { merge:true }).catch(e => console.warn('Save failed', e));
+    COUPLE_DOC().set(patch, { merge:true }).catch(e => console.warn('Save failed', e));
   }
 
   function listenToSharedState(){
-    if(!fbEnabled) return;
-    SHARED_DOC().onSnapshot(function(doc){
+    if(!fbEnabled || !currentUsername) return;
+    COUPLE_DOC().onSnapshot(function(doc){
       const data = doc.exists ? doc.data() : {};
       sharedState.moments = data.moments || [];
       sharedState.letterPhotos = data.letterPhotos || {};
       sharedState.gallery = data.gallery || [];
       sharedState.extraQuotes = data.extraQuotes || [];
+      sharedState.dateIdeas = data.dateIdeas || [];
+      sharedState.beachIdeas = data.beachIdeas || [];
+      sharedState.riddlesSolved = data.riddlesSolved || {};
       renderMoments();
       renderLetterPhotos();
       renderGallery();
       renderExtraLessons();
+      applyExtraDateIdeas();
+      applyExtraBeachIdeas();
+      applySolvedRiddles();
     }, function(err){ console.warn('Listen failed', err); });
   }
 
-  function uploadFileToFirebase(file, folder, progressEl, onDone){
-    if(!fbEnabled){
-      // local-only fallback so the UI still responds
+  // Uploads a file to Cloudinary (photos/videos) and saves the returned URL
+  // via onDone. Falls back to a local base64 data URL (this device/session
+  // only) if Cloudinary isn't configured yet, so the page still works
+  // during setup/testing.
+  function uploadFile(file, folder, progressEl, onDone){
+    if(!cloudinaryEnabled){
       const reader = new FileReader();
       reader.onload = e => onDone(e.target.result, file.type);
       reader.readAsDataURL(file);
       return;
     }
-    const path = `${folder}/${Date.now()}_${file.name}`;
-    const task = storageRef.child(path).put(file);
-    task.on('state_changed', function(snap){
-      if(progressEl){
-        const pct = (snap.bytesTransferred / snap.totalBytes) * 100;
-        progressEl.style.width = pct + '%';
+    const isVideo = (file.type || '').startsWith('video');
+    const endpoint = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CONFIG.cloudName}/${isVideo ? 'video' : 'image'}/upload`;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', CLOUDINARY_CONFIG.uploadPreset);
+    formData.append('folder', `couples/${currentUsername || 'guest'}/${folder}`);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', endpoint, true);
+    xhr.upload.onprogress = function(evt){
+      if(progressEl && evt.lengthComputable){
+        progressEl.style.width = ((evt.loaded / evt.total) * 100) + '%';
       }
-    }, function(err){
-      console.warn('Upload failed', err);
-    }, function(){
-      task.snapshot.ref.getDownloadURL().then(url => onDone(url, file.type));
-    });
+    };
+    xhr.onload = function(){
+      if(xhr.status >= 200 && xhr.status < 300){
+        const res = JSON.parse(xhr.responseText);
+        onDone(res.secure_url, file.type);
+      } else {
+        console.warn('Cloudinary upload failed', xhr.responseText);
+      }
+    };
+    xhr.onerror = function(){ console.warn('Cloudinary upload failed (network error)'); };
+    xhr.send(formData);
   }
 
-  // ============ ambient petals ============
+  // ============ share screen ============
+  function buildShareScreen(){
+    const link = `${location.origin}${location.pathname}?couple=${currentUsername}`;
+    document.getElementById('shareLinkInput').value = link;
+    document.getElementById('shareUserDisplay').value = currentUsername;
+  }
+  function copyShareLink(){
+    const input = document.getElementById('shareLinkInput');
+    input.select();
+    input.setSelectionRange(0, 99999);
+    navigator.clipboard && navigator.clipboard.writeText(input.value).catch(()=>{});
+    const btn = event.target;
+    const original = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = original; }, 1500);
+  }
+
+  // ============ ambient petals + rising hearts ============
   const petalContainer = document.getElementById('petals');
   const petalChars = ['✿','❀','♥'];
   for(let i=0;i<16;i++){
@@ -862,78 +1225,93 @@
     p.style.animationDelay = (Math.random()*12) + 's';
     petalContainer.appendChild(p);
   }
+  const heartChars = ['♥','❤'];
+  for(let i=0;i<10;i++){
+    const h = document.createElement('div');
+    h.className='heart-rise';
+    h.textContent = heartChars[i % heartChars.length];
+    h.style.left = Math.random()*100 + 'vw';
+    h.style.fontSize = (0.6 + Math.random()*0.8) + 'rem';
+    h.style.animationDuration = (14 + Math.random()*16) + 's';
+    h.style.animationDelay = (Math.random()*18) + 's';
+    petalContainer.appendChild(h);
+  }
+
+  // ============ confetti ============
+  function confettiBurst(){
+    const colors = ['#d8a45f','#e8749b','#f6b8cd','#eecb96','#b23a5c'];
+    for(let i=0;i<36;i++){
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.left = Math.random()*100 + 'vw';
+      piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+      piece.style.animation = `confettiFall ${1.6 + Math.random()*1.4}s ease-in forwards`;
+      piece.style.animationDelay = (Math.random()*0.4) + 's';
+      document.body.appendChild(piece);
+      setTimeout(() => piece.remove(), 3600);
+    }
+  }
 
   // ============ screen order + progress dots ============
-  const screenOrder = ['screen-login','screen-anniversary','screen-quotes-intro','screen-video','screen-photos','screen-flip','screen-games','screen-quotes','screen-promise','screen-final'];
+  const screenOrder = ['screen-anniversary','screen-quotes-intro','screen-video','screen-photos','screen-flip','screen-games','screen-quotes','screen-promise','screen-final'];
   const progressDots = document.getElementById('progressDots');
+  progressDots.classList.add('hide');
   screenOrder.forEach((id, i) => {
     const d = document.createElement('div');
-    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.className = 'dot';
     progressDots.appendChild(d);
   });
 
-  const START_DATE = new Date('2022-03-13T00:00:00');
-
   function updateDots(activeIdx){
-    progressDots.querySelectorAll('.dot').forEach((d,i) => {
+    const dots = progressDots.querySelectorAll('.dot');
+    dots.forEach((d,i) => {
       d.classList.toggle('active', i === activeIdx);
-      d.classList.toggle('done', i < activeIdx);
+      d.classList.toggle('done', activeIdx >= 0 && i < activeIdx);
     });
+  }
+
+  function replayFadeIn(container){
+    const el = container.querySelector('.fade-in') || container;
+    el.style.animation = 'none';
+    void el.offsetWidth;
+    el.style.animation = '';
   }
 
   function goTo(id){
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
+    const target = document.getElementById(id);
+    target.classList.add('active');
     window.scrollTo({top:0, behavior:'smooth'});
+    replayFadeIn(target);
     updateDots(screenOrder.indexOf(id));
     if(id === 'screen-anniversary') startAnniversaryCounter();
   }
   function goToGame(id){
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
+    const target = document.getElementById(id);
+    target.classList.add('active');
     window.scrollTo({top:0, behavior:'smooth'});
+    replayFadeIn(target);
     updateDots(screenOrder.indexOf('screen-games'));
     if(id === 'screen-memory' && !memoryInitialized) initMemoryGame();
     if(id === 'screen-wheel') buildWheel();
+    if(id === 'screen-riddles') buildRiddles();
   }
 
-  // ============ login ============
-  const VALID_USER = 'sadiyashariq';
-  const VALID_PASS = '13032022';
-  document.getElementById('loginForm').addEventListener('submit', function(e){
-    e.preventDefault();
-    const u = document.getElementById('userInput').value.trim().toLowerCase();
-    const p = document.getElementById('passInput').value.trim();
-    const errEl = document.getElementById('loginError');
-    if(u !== VALID_USER || p !== VALID_PASS){
-      errEl.textContent = "That doesn't match — try again.";
-      return;
-    }
-    errEl.textContent = '';
-    document.getElementById('finalHeading').textContent = 'One more thing, Sadiya';
-    setSyncPill();
-    goTo('screen-anniversary');
-  });
-
-  // if already unlocked this session, skip straight past login
-  if(sessionStorage.getItem('unlocked') === 'true'){
-    document.getElementById('finalHeading').textContent = 'One more thing, Sadiya';
-  }
-  document.getElementById('loginForm').addEventListener('submit', function(){
-    sessionStorage.setItem('unlocked','true');
-  });
-
-  // ============ dynamic time-together counter (fixed start date) ============
+  // ============ dynamic time-together counter ============
   let anniInterval = null;
   function startAnniversaryCounter(){
     if(anniInterval) clearInterval(anniInterval);
+    if(!coupleData.startDate) return;
+    const startDate = new Date(coupleData.startDate + 'T00:00:00');
     const noteEl = document.getElementById('anniNote');
-    const fmt = START_DATE.toLocaleDateString(undefined, { month:'long', day:'numeric', year:'numeric' });
+    const fmt = startDate.toLocaleDateString(undefined, { month:'long', day:'numeric', year:'numeric' });
     document.getElementById('anniDateTag').textContent = fmt;
 
     function update(){
       const now = new Date();
-      let diffMs = now - START_DATE;
+      let diffMs = now - startDate;
+      if(diffMs < 0) diffMs = 0;
       let years = Math.floor(diffMs / (1000*60*60*24*365.25));
       const yearsMs = years * 1000*60*60*24*365.25;
       let remainderMs = diffMs - yearsMs;
@@ -997,7 +1375,7 @@
       const file = input.files[0];
       if(!file) return;
       progEl.style.width = '4%';
-      uploadFileToFirebase(file, 'ourStory/moments', progEl, function(url, type){
+      uploadFile(file, 'moments', progEl, function(url, type){
         progEl.style.width = '0%';
         input.value = '';
         const item = { url, type, caption: file.name };
@@ -1058,7 +1436,7 @@
     input.addEventListener('change', function(){
       const file = input.files[0];
       if(!file) return;
-      uploadFileToFirebase(file, 'ourStory/letterPhotos', null, function(url){
+      uploadFile(file, 'letterPhotos', null, function(url){
         if(fbEnabled){
           const patch = Object.assign({}, sharedState.letterPhotos, { [i]: url });
           saveSharedField(s => ({ letterPhotos: patch }));
@@ -1076,6 +1454,7 @@
         heartBtn.classList.add('opened');
         openedCount++;
         document.getElementById('lettersCollected').textContent = `${openedCount} of 3 opened`;
+        if(openedCount === 3) confettiBurst();
       }
     });
 
@@ -1198,6 +1577,7 @@
     if(!val) return;
     document.getElementById('sealedText').textContent = val;
     document.getElementById('sealedPreview').classList.add('show');
+    confettiBurst();
   }
 
   // ============ memory match ============
@@ -1242,7 +1622,7 @@
       memMatches++;
       document.getElementById('memPairs').textContent = `${memMatches}/8`;
       resetMemoryTurn();
-      if(memMatches === 8){ document.getElementById('memoryWin').classList.add('show'); }
+      if(memMatches === 8){ document.getElementById('memoryWin').classList.add('show'); confettiBurst(); }
     } else {
       setTimeout(() => {
         memFirstCard.classList.remove('flipped');
@@ -1255,7 +1635,7 @@
   function resetMemoryGame(){ buildMemoryGrid(); }
 
   // ============ date night wheel ============
-  let dateIdeas = [
+  let baseDateIdeas = [
     'Cook a new recipe together, no matter how it turns out.',
     'Rewatch the movie from your first date.',
     'Take a walk with no destination and no phones.',
@@ -1265,8 +1645,13 @@
     'Make a playlist of songs that remind you of each other.',
     'Try the restaurant you keep saying you\'ll try.'
   ];
+  let dateIdeas = baseDateIdeas.slice();
   let spinning = false;
   let wheelTotalRotation = 0;
+  function applyExtraDateIdeas(){
+    dateIdeas = baseDateIdeas.concat(sharedState.dateIdeas || []);
+    if(document.getElementById('screen-wheel').classList.contains('active')) buildWheel();
+  }
   function buildWheel(){
     const wheelEl = document.getElementById('wheel');
     const n = dateIdeas.length;
@@ -1308,11 +1693,106 @@
     const input = document.getElementById('ideaInput');
     const val = input.value.trim();
     if(!val) return;
-    dateIdeas.push(val);
+    if(fbEnabled){
+      saveSharedField(s => ({ dateIdeas: firebase.firestore.FieldValue.arrayUnion(val) }));
+    } else {
+      sharedState.dateIdeas.push(val);
+      applyExtraDateIdeas();
+    }
     input.value = '';
-    buildWheel();
     document.getElementById('reelText').textContent = `Added "${val}" to the wheel — spin to see if it comes up.`;
     document.getElementById('reelBox').classList.add('show');
+  }
+
+  // ============ hotel of riddles ============
+  const riddleData = [
+    { q: "I am felt but never seen, and grow stronger the more I'm given away. What am I?", answers: ['love'], reveal: "It's love — the only thing that multiplies the more you spend it." },
+    { q: "I bloom red, I carry thorns, and lovers have handed me over for centuries. What flower am I?", answers: ['rose','a rose','roses'], reveal: "A rose — a little dramatic, a little perfect, just like us sometimes." },
+    { q: "I'm a small band worn on the fourth finger, and I stand for a promise that doesn't expire. What am I?", answers: ['ring','a ring'], reveal: "A ring — small circle, big promise." },
+    { q: "Two hearts, one path. What's the name for the day this journey first began?", answers: ['anniversary','the anniversary'], reveal: "The anniversary — the day worth marking every single year." }
+  ];
+  function buildRiddles(){
+    const corridor = document.getElementById('corridor');
+    corridor.innerHTML = '';
+    riddleData.forEach((r, i) => {
+      const solved = !!(sharedState.riddlesSolved && sharedState.riddlesSolved[i]);
+      const card = document.createElement('div');
+      card.className = 'door-card' + (solved ? ' solved' : '');
+      card.id = `door${i}`;
+      card.innerHTML = `
+        <div class="door-top"><div class="door-num">0${i+1}</div><div class="door-riddle">${r.q}</div></div>
+        <div class="door-answer-row">
+          <input type="text" id="doorInput${i}" placeholder="Your answer...">
+          <button onclick="tryDoor(${i})">Unlock</button>
+        </div>
+        <div class="door-hint" id="doorHint${i}"></div>
+        <p class="door-reveal">${r.reveal}</p>
+      `;
+      corridor.appendChild(card);
+    });
+  }
+  function applySolvedRiddles(){
+    if(!document.getElementById('screen-riddles').classList.contains('active')) return;
+    riddleData.forEach((r, i) => {
+      const solved = !!(sharedState.riddlesSolved && sharedState.riddlesSolved[i]);
+      const card = document.getElementById(`door${i}`);
+      if(card) card.classList.toggle('solved', solved);
+    });
+  }
+  function tryDoor(i){
+    const input = document.getElementById(`doorInput${i}`);
+    const hint = document.getElementById(`doorHint${i}`);
+    const val = input.value.trim().toLowerCase();
+    if(!val) return;
+    const match = riddleData[i].answers.some(a => val === a || val.includes(a));
+    if(match){
+      const card = document.getElementById(`door${i}`);
+      card.classList.add('solved');
+      hint.textContent = '';
+      confettiBurst();
+      if(fbEnabled){
+        const patch = Object.assign({}, sharedState.riddlesSolved, { [i]: true });
+        saveSharedField(s => ({ riddlesSolved: patch }));
+      } else {
+        sharedState.riddlesSolved[i] = true;
+      }
+    } else {
+      hint.textContent = 'Not quite — try again.';
+    }
+  }
+
+  // ============ message in a bottle (beach) ============
+  const baseBeachIdeas = [
+    "What's a small moment with me you still think about?",
+    "If we could teleport anywhere right now, where would you pick?",
+    "What's one thing I do that always makes you smile?",
+    "What song feels like it was written about us?",
+    "What's a tiny habit of mine you secretly love?",
+    "Where do you picture us five years from now?"
+  ];
+  let beachIdeas = baseBeachIdeas.slice();
+  function applyExtraBeachIdeas(){ beachIdeas = baseBeachIdeas.concat(sharedState.beachIdeas || []); }
+  function popBottle(){
+    const bottle = document.getElementById('bottleEl');
+    bottle.style.transform = 'translate(-50%,-50%) scale(0.7) rotate(20deg)';
+    setTimeout(() => { bottle.style.transform = ''; }, 260);
+    const pick = beachIdeas[Math.floor(Math.random() * beachIdeas.length)];
+    document.getElementById('beachReelText').textContent = pick;
+    document.getElementById('beachReelBox').classList.add('show');
+  }
+  function addBeachIdea(){
+    const input = document.getElementById('beachIdeaInput');
+    const val = input.value.trim();
+    if(!val) return;
+    if(fbEnabled){
+      saveSharedField(s => ({ beachIdeas: firebase.firestore.FieldValue.arrayUnion(val) }));
+    } else {
+      sharedState.beachIdeas.push(val);
+      applyExtraBeachIdeas();
+    }
+    input.value = '';
+    document.getElementById('beachReelText').textContent = `Added "${val}" — tap the bottle again to see if it washes up.`;
+    document.getElementById('beachReelBox').classList.add('show');
   }
 
   // ============ final gallery (polaroid lightbox) ============
@@ -1327,7 +1807,7 @@
     input.addEventListener('change', function(){
       const file = input.files[0];
       if(!file) return;
-      uploadFileToFirebase(file, 'ourStory/gallery', null, function(url){
+      uploadFile(file, 'gallery', null, function(url){
         if(fbEnabled){
           saveSharedField(s => ({ gallery: firebase.firestore.FieldValue.arrayUnion(url) }));
         } else {
@@ -1363,7 +1843,44 @@
 
   // ============ boot ============
   setSyncPill();
-  listenToSharedState();
+
+  // ============ live Firebase connection check ============
+  // Writes and then reads back a tiny throwaway document to prove the
+  // firebaseConfig above is actually valid and Firestore is reachable —
+  // rather than just checking that initializeApp() didn't throw.
+  async function checkFirebaseConnection(){
+    const pill = document.getElementById('fbStatusPill');
+    const text = document.getElementById('fbStatusText');
+    if(!fbEnabled){
+      pill.classList.add('offline');
+      text.textContent = 'Firebase config missing — accounts will not save.';
+      return;
+    }
+    try{
+      const testRef = db.collection('_healthcheck').doc('ping');
+      await testRef.set({ ts: Date.now() });
+      const snap = await testRef.get();
+      if(snap.exists){
+        pill.classList.remove('offline');
+        text.textContent = 'Firebase connected — Our Story project is live.';
+      } else {
+        throw new Error('Write succeeded but read back nothing.');
+      }
+    }catch(err){
+      pill.classList.add('offline');
+      let reason = err && err.message ? err.message : 'Unknown error.';
+      if(err && err.code === 'permission-denied'){
+        reason = 'Permission denied — check your Firestore security rules.';
+      } else if(err && err.code === 'unavailable'){
+        reason = 'Could not reach Firestore — check your internet connection.';
+      } else if(err && (err.code === 'not-found' || /Cloud Firestore API|has not been used/.test(reason))){
+        reason = 'Firestore Database has not been created yet for this project — open the Firebase console and enable it.';
+      }
+      text.textContent = 'Firebase connection failed: ' + reason;
+      console.warn('Firebase health check failed:', err);
+    }
+  }
+  checkFirebaseConnection();
 </script>
 </body>
 </html>
