@@ -571,6 +571,46 @@
   .confetti-piece{ position:fixed; top:-10px; width:8px; height:14px; z-index:80; pointer-events:none; border-radius:2px; }
   @keyframes confettiFall{ to{ transform:translateY(108vh) rotate(540deg); opacity:0; } }
 
+  /* ---------- music / audio ---------- */
+  .audio-card{
+    max-width:420px; margin:20px auto 6px; padding:14px 18px; border-radius:14px;
+    background:linear-gradient(160deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+    border:1px solid rgba(238,203,150,0.32); display:flex; align-items:center; gap:14px;
+    animation: fadeIn .6s ease both;
+  }
+  .audio-card .audio-note{
+    width:38px; height:38px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg, var(--gold-soft), var(--gold)); color:#4a0e26; font-size:1.1rem;
+    animation: bob 2.6s ease-in-out infinite;
+  }
+  .audio-info{ text-align:left; flex-shrink:0; }
+  .audio-label{ font-size:.62rem; letter-spacing:.16em; text-transform:uppercase; color:var(--gold-soft); }
+  .audio-name{ font-size:.78rem; color:rgba(255,246,240,0.7); max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .audio-card audio{ height:32px; flex:1; min-width:0; }
+
+  .album-music-bar{
+    display:none; align-items:center; gap:10px; justify-content:center; margin:0 auto 26px;
+    padding:8px 18px; border-radius:999px; border:1px solid rgba(238,203,150,0.4);
+    background:rgba(0,0,0,0.25); max-width:320px;
+  }
+  .album-music-bar.show{ display:flex; animation:fadeIn .6s ease both; }
+  .album-music-toggle{
+    width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg, var(--gold-soft), var(--gold));
+    color:#4a0e26; display:flex; align-items:center; justify-content:center; font-size:.85rem; flex-shrink:0;
+  }
+  .album-music-name{ font-size:.72rem; color:rgba(255,246,240,0.65); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+  .music-note-float{
+    position:fixed; bottom:-5%; color:rgba(238,203,150,0.55); font-size:1rem; z-index:3; pointer-events:none;
+    animation: noteFloat linear forwards;
+  }
+  @keyframes noteFloat{
+    0%{ transform:translateY(0) translateX(0) rotate(0deg); opacity:0; }
+    12%{ opacity:.8; }
+    85%{ opacity:.5; }
+    100%{ transform:translateY(-90vh) translateX(24px) rotate(30deg); opacity:0; }
+  }
+
   @media (prefers-reduced-motion: reduce){
     .petal, .heart-rise{ animation:none; display:none; }
     .fade-in{ animation:none; }
@@ -721,7 +761,7 @@
     <div class="step-flourish">&#10058;</div>
     <h2>A few clips of us</h2>
     <div class="sync-pill" id="syncPill"><span class="dotpulse"></span><span id="syncPillText">Checking sync…</span></div>
-    <p class="lede">Add a couple of videos or photos. Once uploaded, they'll be here for both of us, on any device.</p>
+    <p class="lede">Add a couple of videos or photos, and a song if you'd like one playing on our album page. Once uploaded, they'll be here for both of us, on any device.</p>
     <div class="upload-grid">
       <label class="upload-tile" id="vtile1">
         <input type="file" accept="video/*,image/*">
@@ -735,13 +775,41 @@
         <span class="label">Add another one</span>
         <div class="up-progress" id="prog2"></div>
       </label>
+      <label class="upload-tile" id="vtile3">
+        <input type="file" accept="audio/*">
+        <span class="icon">&#127925;</span>
+        <span class="label">Add a song</span>
+        <div class="up-progress" id="prog3"></div>
+      </label>
     </div>
     <div class="upload-error" id="momentUploadError" style="text-align:center; margin-left:auto; margin-right:auto;"></div>
-    <p id="momentReelHeading" style="display:none; margin-top:28px; font-size:.68rem; letter-spacing:.24em; text-transform:uppercase; color:var(--gold-soft);">Your clips</p>
-    <div class="moment-reel" id="momentReel"></div>
-    <div class="empty-note" id="momentEmptyNote" style="display:none;">Nothing here yet — add the first one above.</div>
+    <div class="audio-card" id="musicCard" style="display:none;">
+      <span class="audio-note">&#9835;</span>
+      <div class="audio-info">
+        <div class="audio-label">Our song</div>
+        <div class="audio-name" id="musicName">—</div>
+      </div>
+      <audio id="momentsAudioPreview" controls></audio>
+    </div>
     <div class="next-row">
       <button class="ghost-btn" onclick="goTo('screen-quotes-intro')">Back</button>
+      <button class="next-btn" onclick="goTo('screen-reel')">Next</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 3.5: OUR LITTLE REEL (animated showcase of uploaded moments) -->
+<div class="screen" id="screen-reel">
+  <div class="page-inner fade-in">
+    <div class="step-label">04 &middot; A Little Reel</div>
+    <div class="step-flourish">&#10058;</div>
+    <h2>Everything we just added</h2>
+    <p class="lede">Every clip and photo from the last page, together in one reel.</p>
+    <p id="momentReelHeading" style="display:none; margin-top:0; font-size:.68rem; letter-spacing:.24em; text-transform:uppercase; color:var(--gold-soft);">Your clips</p>
+    <div class="moment-reel" id="momentReel"></div>
+    <div class="empty-note" id="momentEmptyNote" style="display:none;">Nothing here yet — go back and add a photo or video first.</div>
+    <div class="next-row">
+      <button class="ghost-btn" onclick="goTo('screen-video')">Back</button>
       <button class="next-btn" onclick="goTo('screen-photos')">Next</button>
     </div>
   </div>
@@ -750,7 +818,7 @@
 <!-- SCREEN 4: 3 PHOTOS -> LETTERS -->
 <div class="screen" id="screen-photos">
   <div class="page-inner fade-in">
-    <div class="step-label">04 &middot; Click The Heart</div>
+    <div class="step-label">05 &middot; Click The Heart</div>
     <div class="step-flourish">&#10058;</div>
     <h2>Three reasons, sealed</h2>
     <p class="lede">Add a photo to each frame if you'd like, then tap the little heart to open what's written underneath.</p>
@@ -758,7 +826,7 @@
     <div class="upload-error" id="trioUploadError" style="text-align:center; margin-left:auto; margin-right:auto;"></div>
     <div class="letters-collected" id="lettersCollected">0 of 3 opened</div>
     <div class="next-row">
-      <button class="ghost-btn" onclick="goTo('screen-video')">Back</button>
+      <button class="ghost-btn" onclick="goTo('screen-reel')">Back</button>
       <button class="next-btn" onclick="goTo('screen-flip')">Next</button>
     </div>
   </div>
@@ -767,7 +835,7 @@
 <!-- SCREEN 5: FLIP CARDS -->
 <div class="screen" id="screen-flip">
   <div class="page-inner fade-in">
-    <div class="step-label">05 &middot; Little Things</div>
+    <div class="step-label">06 &middot; Little Things</div>
     <div class="step-flourish">&#10058;</div>
     <h2>Six small things I notice</h2>
     <p class="lede">Tap each card to flip it over.</p>
@@ -783,7 +851,7 @@
 <!-- SCREEN 5.5: GAMES HUB -->
 <div class="screen" id="screen-games">
   <div class="page-inner fade-in">
-    <div class="step-label">06 &middot; Play a Little</div>
+    <div class="step-label">07 &middot; Play a Little</div>
     <h2>A few games for us</h2>
     <p class="lede">No winning or losing here — just an excuse to sit close together for a few minutes.</p>
     <div class="game-grid">
@@ -902,7 +970,7 @@
 <!-- SCREEN 6: LESSONS -->
 <div class="screen" id="screen-quotes">
   <div class="page-inner fade-in">
-    <div class="step-label">07 &middot; Little Things We Learned</div>
+    <div class="step-label">08 &middot; Little Things We Learned</div>
     <div class="step-flourish">&#10058;</div>
     <h2>Lessons, so far</h2>
     <p class="lede">A few small truths this time with you has taught me.</p>
@@ -932,7 +1000,7 @@
 <!-- SCREEN 7: PROMISE -->
 <div class="screen" id="screen-promise">
   <div class="page-inner fade-in">
-    <div class="step-label">08 &middot; For Later</div>
+    <div class="step-label">09 &middot; For Later</div>
     <div class="step-flourish">&#10058;</div>
     <h2>A little promise</h2>
     <p class="lede">Write something you want to still be true a year from now. Seal it, and read it back before the final page.</p>
@@ -955,8 +1023,13 @@
 <!-- SCREEN 8: FINAL / ALBUM -->
 <div class="screen" id="screen-final">
   <div class="page-inner fade-in">
-    <div class="step-label">09 &middot; For Keeps</div>
+    <div class="step-label">10 &middot; For Keeps</div>
     <h2 id="finalHeading">Our Album</h2>
+    <div class="album-music-bar" id="albumMusicBar">
+      <button class="album-music-toggle" id="albumMusicToggle" onclick="toggleAlbumMusic()" aria-label="Play or pause our song">&#9654;</button>
+      <span class="album-music-name" id="albumMusicName">Our song</span>
+    </div>
+    <audio id="albumAudio" loop></audio>
     <p class="lede">Tap a photo to open it.</p>
     <div class="gallery" id="finalGallery"></div>
     <div class="upload-error" id="galleryUploadError" style="text-align:center; margin-left:auto; margin-right:auto; margin-bottom:20px;"></div>
@@ -1100,7 +1173,7 @@
   // ============ account / auth state ============
   let currentUsername = null;
   let coupleData = { yourName:'', partnerName:'', startDate:null };
-  let sharedState = { moments: [], letterPhotos: {}, gallery: [], extraQuotes: [], dateIdeas: [], beachIdeas: [], riddlesSolved: {}, promise: '' };
+  let sharedState = { moments: [], letterPhotos: {}, gallery: [], extraQuotes: [], dateIdeas: [], beachIdeas: [], riddlesSolved: {}, promise: '', music: null };
 
   const COUPLES = () => db.collection('couples');
   const COUPLE_DOC = () => COUPLES().doc(currentUsername);
@@ -1232,6 +1305,7 @@
       sharedState.beachIdeas = data.beachIdeas || [];
       sharedState.riddlesSolved = data.riddlesSolved || {};
       sharedState.promise = data.promise || '';
+      sharedState.music = data.music || null;
       renderMoments();
       renderLetterPhotos();
       renderGallery();
@@ -1240,6 +1314,7 @@
       applyExtraBeachIdeas();
       applySolvedRiddles();
       renderPromise();
+      renderMusic();
     }, function(err){ console.warn('Listen failed', err); });
   }
 
@@ -1271,8 +1346,12 @@
       reader.readAsDataURL(file);
       return;
     }
+    // Cloudinary has no separate "audio" resource type — audio files must be
+    // uploaded through the same endpoint as video, or they get rejected as
+    // an invalid image. This was the bug blocking music uploads.
     const isVideo = (file.type || '').startsWith('video');
-    const endpoint = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CONFIG.cloudName}/${isVideo ? 'video' : 'image'}/upload`;
+    const isAudio = (file.type || '').startsWith('audio');
+    const endpoint = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CONFIG.cloudName}/${(isVideo || isAudio) ? 'video' : 'image'}/upload`;
     const formData = new FormData();
     formData.append('file', file);
     formData.append('upload_preset', CLOUDINARY_CONFIG.uploadPreset);
@@ -1361,7 +1440,7 @@
   }
 
   // ============ screen order + progress dots ============
-  const screenOrder = ['screen-anniversary','screen-quotes-intro','screen-video','screen-photos','screen-flip','screen-games','screen-quotes','screen-promise','screen-final'];
+  const screenOrder = ['screen-anniversary','screen-quotes-intro','screen-video','screen-reel','screen-photos','screen-flip','screen-games','screen-quotes','screen-promise','screen-final'];
   const progressDots = document.getElementById('progressDots');
   progressDots.classList.add('hide');
   screenOrder.forEach((id, i) => {
@@ -1393,6 +1472,17 @@
     replayFadeIn(target);
     updateDots(screenOrder.indexOf(id));
     if(id === 'screen-anniversary') startAnniversaryCounter();
+    if(id === 'screen-reel') renderMoments();
+    if(id === 'screen-final'){
+      tryAutoplayAlbumMusic();
+    } else {
+      const albumAudio = document.getElementById('albumAudio');
+      if(albumAudio && !albumAudio.paused){
+        albumAudio.pause();
+        document.getElementById('albumMusicToggle').innerHTML = '&#9654;';
+        if(musicNoteInterval){ clearInterval(musicNoteInterval); musicNoteInterval = null; }
+      }
+    }
   }
   function goToGame(id){
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -1491,8 +1581,8 @@
         input.value = '';
         const item = { url, type, caption: file.name };
         errEl.style.color = '#a8e0b8';
-        errEl.textContent = 'Added — look for it just below.';
-        setTimeout(() => { if(errEl.textContent === 'Added — look for it just below.') errEl.textContent = ''; errEl.style.color = ''; }, 3000);
+        errEl.textContent = 'Added — see it on the next page, "A Little Reel".';
+        setTimeout(() => { if(errEl.textContent.startsWith('Added')) errEl.textContent = ''; errEl.style.color = ''; }, 3500);
         if(fbEnabled){
           saveSharedField(s => ({ moments: firebase.firestore.FieldValue.arrayUnion(item) }));
         } else {
@@ -1508,6 +1598,97 @@
   }
   wireUploadTile(document.getElementById('vtile1'), 'prog1');
   wireUploadTile(document.getElementById('vtile2'), 'prog2');
+
+  // ============ music (song upload + playback) ============
+  document.getElementById('vtile3').querySelector('input').addEventListener('change', function(){
+    const input = this;
+    const file = input.files[0];
+    if(!file) return;
+    const errEl = document.getElementById('momentUploadError');
+    const progEl = document.getElementById('prog3');
+    errEl.textContent = '';
+    progEl.style.width = '4%';
+    uploadFile(file, 'music', progEl, function(url, type){
+      progEl.style.width = '0%';
+      input.value = '';
+      const item = { url, name: file.name };
+      errEl.style.color = '#a8e0b8';
+      errEl.textContent = 'Song added — it\'ll play on the album page.';
+      setTimeout(() => { if(errEl.textContent.startsWith('Song added')) errEl.textContent = ''; errEl.style.color = ''; }, 3500);
+      if(fbEnabled){
+        saveSharedField(s => ({ music: item }));
+      } else {
+        sharedState.music = item;
+        renderMusic();
+      }
+    }, function(msg){
+      errEl.style.color = '';
+      errEl.textContent = msg;
+      input.value = '';
+    });
+  });
+
+  function renderMusic(){
+    const has = !!(sharedState.music && sharedState.music.url);
+    const card = document.getElementById('musicCard');
+    if(has){
+      card.style.display = 'flex';
+      document.getElementById('musicName').textContent = sharedState.music.name || 'Our song';
+      const preview = document.getElementById('momentsAudioPreview');
+      if(preview.src !== sharedState.music.url) preview.src = sharedState.music.url;
+    } else {
+      card.style.display = 'none';
+    }
+    const bar = document.getElementById('albumMusicBar');
+    const albumAudio = document.getElementById('albumAudio');
+    if(has){
+      bar.classList.add('show');
+      document.getElementById('albumMusicName').textContent = sharedState.music.name || 'Our song';
+      if(albumAudio.src !== sharedState.music.url) albumAudio.src = sharedState.music.url;
+    } else {
+      bar.classList.remove('show');
+    }
+  }
+
+  let musicNoteInterval = null;
+  function spawnMusicNote(){
+    const note = document.createElement('div');
+    note.className = 'music-note-float';
+    note.textContent = Math.random() > 0.5 ? '\u266A' : '\u266B';
+    note.style.left = (10 + Math.random()*80) + 'vw';
+    note.style.animationDuration = (7 + Math.random()*5) + 's';
+    document.body.appendChild(note);
+    setTimeout(() => note.remove(), 12000);
+  }
+  function toggleAlbumMusic(){
+    const audio = document.getElementById('albumAudio');
+    const btn = document.getElementById('albumMusicToggle');
+    if(!audio.src) return;
+    if(audio.paused){
+      audio.play().catch(() => {});
+      btn.innerHTML = '&#10073;&#10073;';
+      if(!musicNoteInterval) musicNoteInterval = setInterval(spawnMusicNote, 1400);
+    } else {
+      audio.pause();
+      btn.innerHTML = '&#9654;';
+      if(musicNoteInterval){ clearInterval(musicNoteInterval); musicNoteInterval = null; }
+    }
+  }
+  // Try to start the song automatically when the album page opens. Browsers
+  // only allow this once the visitor has already interacted with the page —
+  // by this point in the flow they've clicked through many screens, so it
+  // succeeds in practice; if it's ever blocked, the toggle button is right
+  // there to start it with one tap instead of failing silently.
+  function tryAutoplayAlbumMusic(){
+    const audio = document.getElementById('albumAudio');
+    if(!audio.src) return;
+    audio.play().then(() => {
+      document.getElementById('albumMusicToggle').innerHTML = '&#10073;&#10073;';
+      if(!musicNoteInterval) musicNoteInterval = setInterval(spawnMusicNote, 1400);
+    }).catch(() => {
+      document.getElementById('albumMusicToggle').innerHTML = '&#9654;';
+    });
+  }
 
   function renderMoments(){
     const reel = document.getElementById('momentReel');
@@ -1525,10 +1706,14 @@
       const card = document.createElement('div');
       card.className = 'moment-card ' + momentAnimClasses[i % momentAnimClasses.length];
       card.style.animationDelay = (i * 0.12) + 's';
-      const mediaEl = (m.type||'').startsWith('video')
+      const isVideoMoment = (m.type||'').startsWith('video');
+      const mediaEl = isVideoMoment
         ? `<video src="${m.url}" controls muted playsinline></video>`
-        : `<img src="${m.url}" alt="">`;
+        : `<img src="${m.url}" alt="" style="cursor:pointer;">`;
       card.innerHTML = `${mediaEl}<div class="cap">${m.caption ? m.caption : 'a moment of us'}</div>`;
+      if(!isVideoMoment){
+        card.querySelector('img').addEventListener('click', () => openLightbox(m.url));
+      }
       reel.appendChild(card);
     });
   }
