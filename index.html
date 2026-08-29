@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Our Story</title>
+<title>For Us</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -551,9 +551,8 @@
       <div class="heart">&#10084;</div>
     </div>
     <div class="eyebrow">Private &middot; Just for the two of you</div>
-    <h1>Our Story</h1>
-    <p class="sub">A little something, sealed for the two of you. Create your space, or sign back in to open it.</p>
-    <div class="sync-pill" id="fbStatusPill" style="margin-bottom:20px;"><span class="dotpulse"></span><span id="fbStatusText">Checking Firebase connection…</span></div>
+    <h1>A little something, sealed for us</h1>
+    <p class="sub">Create your space, or sign back in to open it.</p>
 
     <div class="tab-row">
       <button class="tab-btn active" id="tabSetupBtn" onclick="switchAuthTab('setup')">Create</button>
@@ -940,39 +939,22 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 <script>
   /* =========================================================================
-     SETUP — REQUIRED for accounts, uploads, and cross-device sync.
-
-     DATABASE (Firestore — free forever, no card needed):
+     FIREBASE SETUP — REQUIRED for accounts, uploads, and cross-device sync.
      1. Go to https://console.firebase.google.com and create a free project.
      2. Add a Web App to it, copy the config object it gives you, and paste
         it below in place of firebaseConfig.
-     3. In the console enable "Firestore Database" (start in test mode).
-        Every couple's data lives in its own Firestore document under the
-        "couples" collection, keyed by the username they choose at setup.
-
-     PHOTO/VIDEO STORAGE (Cloudinary — free tier, no card needed):
-     Firebase Storage now requires a paid Blaze billing plan even to stay
-     within its free quota, so photo/video uploads here go to Cloudinary
-     instead, which has no card requirement on its free tier (25GB storage
-     + 25GB bandwidth/month).
-     1. Create a free account at https://cloudinary.com
-     2. On your Cloudinary dashboard, copy your "Cloud name".
-     3. Go to Settings -> Upload -> Upload presets -> Add upload preset.
-        Set "Signing Mode" to "Unsigned", give it any name, and Save.
-        (Unsigned presets are what let this page upload directly from the
-        browser without a backend server or secret key.)
-     4. Paste your cloud name and preset name into CLOUDINARY_CONFIG below.
-
-     Deploy this file (e.g. push to a GitHub repo and connect it to Netlify
-     or GitHub Pages). No backend/server code is needed beyond Firebase +
-     Cloudinary.
-
-     If firebaseConfig is left as placeholder values, the page still works
-     for a single visit, but accounts and the shared link will not persist.
-     If CLOUDINARY_CONFIG is left as placeholder values, uploaded photos/
-     videos will only be visible on this device, this session.
+     3. In the console enable "Firestore Database" (start in test mode) and
+        "Storage" (start in test mode). Every couple's data lives in its own
+        Firestore document under the "couples" collection, keyed by the
+        username they choose at setup, so one Firebase project safely
+        serves any number of couples.
+     4. Deploy / re-upload this file (e.g. to Netlify, connected to a GitHub
+        repo). No server or backend code is needed beyond Firebase itself.
+     If this config is left as-is, the page still works for a single visit,
+     but accounts, uploads, and the shared link will not persist or sync.
      ========================================================================= */
   const firebaseConfig = {
     apiKey: "AIzaSyDrcgb7dAioL2Gt8_M96MHV28-YTXXZNnc",
@@ -980,32 +962,24 @@
     projectId: "our-story0614",
     storageBucket: "our-story0614.firebasestorage.app",
     messagingSenderId: "543405275351",
-    appId: "1:543405275351:web:c2a0b5fdb0690a5fa65892",
-    measurementId: "G-32LD44PERN"
+    appId: "1:543405275351:web:c2a0b5fdb0690a5fa65892"
   };
 
-  const CLOUDINARY_CONFIG = {
-    cloudName: "av6wi00t",
-    uploadPreset: "ml_default"
-  };
-
-  let fbEnabled = false, db = null;
+  let fbEnabled = false, db = null, storageRef = null;
   try{
     if(firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY"){
       firebase.initializeApp(firebaseConfig);
       db = firebase.firestore();
+      storageRef = firebase.storage().ref();
       fbEnabled = true;
     }
   }catch(e){ console.warn('Firebase not configured yet:', e); fbEnabled = false; }
-
-  const cloudinaryEnabled = CLOUDINARY_CONFIG.cloudName && CLOUDINARY_CONFIG.cloudName !== "YOUR_CLOUD_NAME"
-    && CLOUDINARY_CONFIG.uploadPreset && CLOUDINARY_CONFIG.uploadPreset !== "YOUR_UNSIGNED_PRESET";
 
   function setSyncPill(){
     const pill = document.getElementById('syncPill');
     const text = document.getElementById('syncPillText');
     if(!pill) return;
-    if(fbEnabled && cloudinaryEnabled){
+    if(fbEnabled){
       pill.classList.remove('offline');
       text.textContent = 'Synced — visible to both of you, everywhere';
     } else {
@@ -1158,41 +1132,25 @@
     }, function(err){ console.warn('Listen failed', err); });
   }
 
-  // Uploads a file to Cloudinary (photos/videos) and saves the returned URL
-  // via onDone. Falls back to a local base64 data URL (this device/session
-  // only) if Cloudinary isn't configured yet, so the page still works
-  // during setup/testing.
-  function uploadFile(file, folder, progressEl, onDone){
-    if(!cloudinaryEnabled){
+  function uploadFileToFirebase(file, folder, progressEl, onDone){
+    if(!fbEnabled || !currentUsername){
       const reader = new FileReader();
       reader.onload = e => onDone(e.target.result, file.type);
       reader.readAsDataURL(file);
       return;
     }
-    const isVideo = (file.type || '').startsWith('video');
-    const endpoint = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CONFIG.cloudName}/${isVideo ? 'video' : 'image'}/upload`;
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', CLOUDINARY_CONFIG.uploadPreset);
-    formData.append('folder', `couples/${currentUsername || 'guest'}/${folder}`);
-
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', endpoint, true);
-    xhr.upload.onprogress = function(evt){
-      if(progressEl && evt.lengthComputable){
-        progressEl.style.width = ((evt.loaded / evt.total) * 100) + '%';
+    const path = `couples/${currentUsername}/${folder}/${Date.now()}_${file.name}`;
+    const task = storageRef.child(path).put(file);
+    task.on('state_changed', function(snap){
+      if(progressEl){
+        const pct = (snap.bytesTransferred / snap.totalBytes) * 100;
+        progressEl.style.width = pct + '%';
       }
-    };
-    xhr.onload = function(){
-      if(xhr.status >= 200 && xhr.status < 300){
-        const res = JSON.parse(xhr.responseText);
-        onDone(res.secure_url, file.type);
-      } else {
-        console.warn('Cloudinary upload failed', xhr.responseText);
-      }
-    };
-    xhr.onerror = function(){ console.warn('Cloudinary upload failed (network error)'); };
-    xhr.send(formData);
+    }, function(err){
+      console.warn('Upload failed', err);
+    }, function(){
+      task.snapshot.ref.getDownloadURL().then(url => onDone(url, file.type));
+    });
   }
 
   // ============ share screen ============
@@ -1375,7 +1333,7 @@
       const file = input.files[0];
       if(!file) return;
       progEl.style.width = '4%';
-      uploadFile(file, 'moments', progEl, function(url, type){
+      uploadFileToFirebase(file, 'moments', progEl, function(url, type){
         progEl.style.width = '0%';
         input.value = '';
         const item = { url, type, caption: file.name };
@@ -1436,7 +1394,7 @@
     input.addEventListener('change', function(){
       const file = input.files[0];
       if(!file) return;
-      uploadFile(file, 'letterPhotos', null, function(url){
+      uploadFileToFirebase(file, 'letterPhotos', null, function(url){
         if(fbEnabled){
           const patch = Object.assign({}, sharedState.letterPhotos, { [i]: url });
           saveSharedField(s => ({ letterPhotos: patch }));
@@ -1807,7 +1765,7 @@
     input.addEventListener('change', function(){
       const file = input.files[0];
       if(!file) return;
-      uploadFile(file, 'gallery', null, function(url){
+      uploadFileToFirebase(file, 'gallery', null, function(url){
         if(fbEnabled){
           saveSharedField(s => ({ gallery: firebase.firestore.FieldValue.arrayUnion(url) }));
         } else {
@@ -1843,44 +1801,6 @@
 
   // ============ boot ============
   setSyncPill();
-
-  // ============ live Firebase connection check ============
-  // Writes and then reads back a tiny throwaway document to prove the
-  // firebaseConfig above is actually valid and Firestore is reachable —
-  // rather than just checking that initializeApp() didn't throw.
-  async function checkFirebaseConnection(){
-    const pill = document.getElementById('fbStatusPill');
-    const text = document.getElementById('fbStatusText');
-    if(!fbEnabled){
-      pill.classList.add('offline');
-      text.textContent = 'Firebase config missing — accounts will not save.';
-      return;
-    }
-    try{
-      const testRef = db.collection('_healthcheck').doc('ping');
-      await testRef.set({ ts: Date.now() });
-      const snap = await testRef.get();
-      if(snap.exists){
-        pill.classList.remove('offline');
-        text.textContent = 'Firebase connected — Our Story project is live.';
-      } else {
-        throw new Error('Write succeeded but read back nothing.');
-      }
-    }catch(err){
-      pill.classList.add('offline');
-      let reason = err && err.message ? err.message : 'Unknown error.';
-      if(err && err.code === 'permission-denied'){
-        reason = 'Permission denied — check your Firestore security rules.';
-      } else if(err && err.code === 'unavailable'){
-        reason = 'Could not reach Firestore — check your internet connection.';
-      } else if(err && (err.code === 'not-found' || /Cloud Firestore API|has not been used/.test(reason))){
-        reason = 'Firestore Database has not been created yet for this project — open the Firebase console and enable it.';
-      }
-      text.textContent = 'Firebase connection failed: ' + reason;
-      console.warn('Firebase health check failed:', err);
-    }
-  }
-  checkFirebaseConnection();
 </script>
 </body>
 </html>
