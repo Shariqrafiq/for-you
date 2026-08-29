@@ -277,6 +277,52 @@
   .photo-tile .veil{ position:absolute; inset:0; background:linear-gradient(160deg, rgba(178,58,92,0.35), rgba(74,14,38,0.55)); pointer-events:none; }
   .letters-collected{ font-size:.78rem; color:rgba(255,246,240,0.55); margin-top:24px; }
 
+  /* ---------- envelope + wax seal cards (replaces the small photo-tiles) ---------- */
+  .envelope-card{
+    width:230px; display:flex; flex-direction:column; align-items:center;
+  }
+  .env-shape{
+    width:100%; aspect-ratio:4/3; position:relative; border-radius:10px; overflow:hidden; cursor:pointer;
+    box-shadow:0 20px 40px rgba(0,0,0,0.4); transition:transform .25s ease, box-shadow .25s ease;
+  }
+  .env-shape:hover{ transform:translateY(-4px); box-shadow:0 26px 50px rgba(0,0,0,0.5); }
+  .env-paper{
+    position:absolute; inset:0; background:linear-gradient(165deg, var(--cream), #f3e2c8);
+  }
+  .env-photo-peek{ position:absolute; inset:0; }
+  .env-photo-peek img{ width:100%; height:100%; object-fit:cover; }
+  .env-photo-peek::after{
+    content:''; position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.55) 100%);
+  }
+  .env-flap-top{
+    position:absolute; top:0; left:0; width:0; height:0;
+    border-left:115px solid transparent; border-right:115px solid transparent;
+    border-top:86px solid #f3e2c8;
+    transform-origin:top center; transition:transform .5s cubic-bezier(.4,.1,.3,1);
+    z-index:2;
+  }
+  .env-shape.opened .env-flap-top{ transform:rotateX(178deg); }
+  .env-seal{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:64px; height:64px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #c14562, var(--rose-deep) 75%);
+    border:none; z-index:3; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 8px 16px rgba(0,0,0,0.4), inset 0 -3px 6px rgba(0,0,0,0.25);
+    transition:transform .35s cubic-bezier(.3,1.6,.4,1), opacity .35s ease;
+    cursor:pointer;
+  }
+  .env-seal svg{ width:26px; height:26px; }
+  .env-seal:hover{ transform:translate(-50%,-50%) scale(1.08); }
+  .env-shape.opened .env-seal{ transform:translate(-50%,-50%) scale(0.3) rotate(35deg); opacity:0; }
+  .env-caption{
+    margin-top:12px; font-size:.66rem; letter-spacing:.24em; text-transform:uppercase; color:rgba(238,203,150,0.65);
+  }
+  .env-photo-upload{
+    margin-top:10px; font-size:.68rem; color:var(--gold-soft); cursor:pointer; text-decoration:underline;
+    text-underline-offset:3px; position:relative; display:inline-block;
+  }
+  .env-photo-upload input{ position:absolute; inset:0; opacity:0; cursor:pointer; }
+  .env-photo-upload:hover{ color:var(--cream); }
+
   .modal-backdrop{
     position:fixed; inset:0; background:rgba(30,4,15,0.8); backdrop-filter: blur(3px);
     display:none; align-items:center; justify-content:center; z-index:50; padding:20px;
@@ -691,6 +737,7 @@
       </label>
     </div>
     <div class="upload-error" id="momentUploadError" style="text-align:center; margin-left:auto; margin-right:auto;"></div>
+    <p id="momentReelHeading" style="display:none; margin-top:28px; font-size:.68rem; letter-spacing:.24em; text-transform:uppercase; color:var(--gold-soft);">Your clips</p>
     <div class="moment-reel" id="momentReel"></div>
     <div class="empty-note" id="momentEmptyNote" style="display:none;">Nothing here yet — add the first one above.</div>
     <div class="next-row">
@@ -913,6 +960,11 @@
     <p class="lede">Tap a photo to open it.</p>
     <div class="gallery" id="finalGallery"></div>
     <div class="upload-error" id="galleryUploadError" style="text-align:center; margin-left:auto; margin-right:auto; margin-bottom:20px;"></div>
+    <div class="sealed-preview" id="finalPromiseEcho" style="display:none; max-width:480px; margin:0 auto 30px;">
+      <div class="wax">&#128139;</div>
+      <p style="font-size:.66rem; letter-spacing:.2em; text-transform:uppercase; color:var(--gold-soft); font-style:normal; margin-bottom:8px;">Our Promise</p>
+      <p id="finalPromiseText"></p>
+    </div>
     <p class="final-msg" id="finalMsg">
       Every ordinary day still looks better with you somewhere in it.
       This whole little page was just an excuse to say that properly.
@@ -1048,7 +1100,7 @@
   // ============ account / auth state ============
   let currentUsername = null;
   let coupleData = { yourName:'', partnerName:'', startDate:null };
-  let sharedState = { moments: [], letterPhotos: {}, gallery: [], extraQuotes: [], dateIdeas: [], beachIdeas: [], riddlesSolved: {} };
+  let sharedState = { moments: [], letterPhotos: {}, gallery: [], extraQuotes: [], dateIdeas: [], beachIdeas: [], riddlesSolved: {}, promise: '' };
 
   const COUPLES = () => db.collection('couples');
   const COUPLE_DOC = () => COUPLES().doc(currentUsername);
@@ -1179,6 +1231,7 @@
       sharedState.dateIdeas = data.dateIdeas || [];
       sharedState.beachIdeas = data.beachIdeas || [];
       sharedState.riddlesSolved = data.riddlesSolved || {};
+      sharedState.promise = data.promise || '';
       renderMoments();
       renderLetterPhotos();
       renderGallery();
@@ -1186,6 +1239,7 @@
       applyExtraDateIdeas();
       applyExtraBeachIdeas();
       applySolvedRiddles();
+      renderPromise();
     }, function(err){ console.warn('Listen failed', err); });
   }
 
@@ -1436,6 +1490,9 @@
         progEl.style.width = '0%';
         input.value = '';
         const item = { url, type, caption: file.name };
+        errEl.style.color = '#a8e0b8';
+        errEl.textContent = 'Added — look for it just below.';
+        setTimeout(() => { if(errEl.textContent === 'Added — look for it just below.') errEl.textContent = ''; errEl.style.color = ''; }, 3000);
         if(fbEnabled){
           saveSharedField(s => ({ moments: firebase.firestore.FieldValue.arrayUnion(item) }));
         } else {
@@ -1443,6 +1500,7 @@
           renderMoments();
         }
       }, function(msg){
+        errEl.style.color = '';
         errEl.textContent = msg;
         input.value = '';
       });
@@ -1454,9 +1512,15 @@
   function renderMoments(){
     const reel = document.getElementById('momentReel');
     const emptyNote = document.getElementById('momentEmptyNote');
+    const heading = document.getElementById('momentReelHeading');
     reel.innerHTML = '';
-    if(!sharedState.moments.length){ emptyNote.style.display='block'; return; }
+    if(!sharedState.moments.length){
+      emptyNote.style.display='block';
+      if(heading) heading.style.display='none';
+      return;
+    }
     emptyNote.style.display='none';
+    if(heading) heading.style.display='block';
     sharedState.moments.forEach((m, i) => {
       const card = document.createElement('div');
       card.className = 'moment-card ' + momentAnimClasses[i % momentAnimClasses.length];
@@ -1469,30 +1533,36 @@
     });
   }
 
-  // ============ 3 photo tiles + letters ============
+  // ============ sealed envelopes (tap the wax seal to break it) ============
   const letterData = [
     { title:"Reason one", text:"The way you laugh at your own jokes before you finish telling them. I've never once minded waiting for the punchline." },
     { title:"Reason two", text:"You remember small things — what I said in passing weeks ago, how I take my coffee. Being known like that still catches me off guard." },
     { title:"Reason three", text:"You make ordinary places feel worth remembering. I've started noticing that the good days all have you somewhere in them." }
   ];
-  const trioRevealClasses = ['reveal-fade','reveal-flip','reveal-rise'];
+  const HEART_OUTLINE_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="#fbdce7" stroke-width="1.6"><path d="M12 20.5s-7.5-4.9-10-9.7C.4 7.3 2.2 4 5.6 4c2 0 3.6 1.1 4.4 2.7C10.8 5.1 12.4 4 14.4 4c3.4 0 5.2 3.3 3.6 6.8-2.5 4.8-10 9.7-10 9.7z"/></svg>';
   const trio = document.getElementById('trio');
   let openedCount = 0;
   const trioTiles = [];
   letterData.forEach((data, i) => {
-    const tile = document.createElement('div');
-    tile.className = 'photo-tile';
-    tile.innerHTML = `
-      <label class="upload-face" id="uf${i}">
+    const card = document.createElement('div');
+    card.className = 'envelope-card';
+    card.innerHTML = `
+      <div class="env-shape" id="envShape${i}">
+        <div class="env-paper"></div>
+        <div class="env-photo-peek" id="envPhoto${i}" style="display:none;"></div>
+        <div class="env-flap-top"></div>
+        <button class="env-seal" id="envSeal${i}" aria-label="Break the seal">${HEART_OUTLINE_SVG}</button>
+      </div>
+      <div class="env-caption">Tap the seal to break it</div>
+      <label class="env-photo-upload" id="envUpload${i}">
+        Add a photo to this one
         <input type="file" accept="image/*">
-        <span class="icon">&#128247;</span>
-        <span class="label">Tap to add a photo</span>
       </label>
-      <button class="open-heart" id="oh${i}" aria-label="Open letter">&#10084;</button>
     `;
-    const uploadFace = tile.querySelector('.upload-face');
-    const input = tile.querySelector('input');
-    const heartBtn = tile.querySelector('.open-heart');
+    const shape = card.querySelector('.env-shape');
+    const seal = card.querySelector('.env-seal');
+    const input = card.querySelector('input');
+    const uploadLabel = card.querySelector('.env-photo-upload');
     const errEl = document.getElementById('trioUploadError');
 
     input.addEventListener('change', function(){
@@ -1513,40 +1583,32 @@
       });
     });
 
-    heartBtn.addEventListener('click', function(){
+    seal.addEventListener('click', function(ev){
+      ev.stopPropagation();
       const photoUrl = sharedState.letterPhotos[i] || '';
-      openLetter(data, photoUrl);
-      if(!heartBtn.classList.contains('opened')){
-        heartBtn.classList.add('opened');
+      if(!shape.classList.contains('opened')){
+        shape.classList.add('opened');
         openedCount++;
         document.getElementById('lettersCollected').textContent = `${openedCount} of 3 opened`;
         if(openedCount === 3) confettiBurst();
       }
+      setTimeout(() => openLetter(data, photoUrl), 260);
     });
 
-    trio.appendChild(tile);
-    trioTiles.push({ tile, uploadFace, input, heartBtn });
+    trio.appendChild(card);
+    trioTiles.push({ card, shape, envPhotoEl: card.querySelector('.env-photo-peek'), input, uploadLabel });
   });
 
   function renderLetterPhotos(){
     trioTiles.forEach((t, i) => {
       const url = sharedState.letterPhotos[i];
       if(!url) return;
-      if(t.tile.querySelector('.pt-img')) return;
+      if(t.envPhotoEl.querySelector('img')) return;
       const img = document.createElement('img');
-      img.className = 'pt-img ' + trioRevealClasses[i % trioRevealClasses.length];
       img.src = url;
-      t.tile.insertBefore(img, t.uploadFace);
-      const veil = document.createElement('div');
-      veil.className = 'veil';
-      t.tile.insertBefore(veil, t.uploadFace);
-      t.uploadFace.style.display = 'none';
-      const changeBtn = document.createElement('button');
-      changeBtn.className = 'change-btn';
-      changeBtn.type = 'button';
-      changeBtn.textContent = 'change photo';
-      changeBtn.addEventListener('click', ev => { ev.stopPropagation(); t.input.click(); });
-      t.tile.appendChild(changeBtn);
+      t.envPhotoEl.appendChild(img);
+      t.envPhotoEl.style.display = 'block';
+      t.uploadLabel.firstChild.textContent = 'Change photo ';
     });
   }
 
@@ -1641,9 +1703,40 @@
     const ta = document.getElementById('promiseText');
     const val = ta.value.trim();
     if(!val) return;
-    document.getElementById('sealedText').textContent = val;
-    document.getElementById('sealedPreview').classList.add('show');
+    if(fbEnabled){
+      saveSharedField(s => ({ promise: val }));
+    } else {
+      sharedState.promise = val;
+    }
+    renderPromise();
     confettiBurst();
+  }
+
+  // Shows the sealed promise wherever it belongs: back on the promise page
+  // itself (so revisiting or reopening the shared link shows what was
+  // written, not a blank textarea) and echoed on the final album page.
+  function renderPromise(){
+    const has = !!(sharedState.promise && sharedState.promise.trim());
+    const preview = document.getElementById('sealedPreview');
+    const sealedText = document.getElementById('sealedText');
+    const ta = document.getElementById('promiseText');
+    if(has){
+      sealedText.textContent = sharedState.promise;
+      preview.classList.add('show');
+      if(ta && !ta.value) ta.value = sharedState.promise;
+    } else {
+      preview.classList.remove('show');
+    }
+
+    const finalPromiseBox = document.getElementById('finalPromiseEcho');
+    if(finalPromiseBox){
+      if(has){
+        finalPromiseBox.style.display = 'block';
+        document.getElementById('finalPromiseText').textContent = sharedState.promise;
+      } else {
+        finalPromiseBox.style.display = 'none';
+      }
+    }
   }
 
   // ============ memory match ============
